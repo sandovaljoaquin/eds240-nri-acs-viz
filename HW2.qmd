@@ -73,20 +73,20 @@ ggplot(nri_counties, aes(x = national_risk_index_score_composite,
 
 1.  What are your variables of interest and what kinds of data (e.g. numeric, categorical, ordered, etc.) are they (a bullet point list is fine)?
 
-**The variables of interest are state (factor) and national risk index score composite (numeric).**
+The variables of interest are state (factor) and national risk index score composite (numeric).
 
 2.  How did you decide which type of graphic form was best suited for answering the question? What alternative graphic forms could you have used instead? Why did you settle on this particular graphic form?
 
-**I chose a boxplot to compare the distributions of county NRI scores across all 50 states. This visual shows summary statistics (median, quartiles, range) of each state while still being readable. Alternative choices could have been violin plots to show full distribution shapes or a dot plot of state medians which would have been more limited. I chose the boxplot because viewers can see both California's high median and its within-state variability against other states, while the ordered layout makes the ranking immediately obvious.**
+I chose a boxplot to compare the distributions of county NRI scores across all 50 states. This visual shows summary statistics (median, quartiles, range) of each state while still being readable. Alternative choices could have been violin plots to show full distribution shapes or a dot plot of state medians which would have been more limited. I chose the boxplot because viewers can see both California's high median and its within-state variability against other states, while the ordered layout makes the ranking immediately obvious.
 
 3.  Summarize your main finding in no more than two sentences.
 
-**California counties rank highest with nearly double the national median risk score (94.8 vs 50)**
+California counties rank highest with nearly double the national median risk score (94.8 vs 50).
 
 4.  What modifications did you make to this visualization to make it more easily readable?
 
-**I added vertical lines representing both the national and California median risk values, reordered states relative to their median national risk index score composite, and highlighted the california boxplot and vertical line orange.**
+I added vertical lines representing both the national and California median risk values, reordered states relative to their median national risk index score composite, and highlighted the california boxplot and vertical line orange.
 
 5.  Is there anything you wanted to implement, but didn’t know how? If so, please describe.
 
-**It would have been cool to make an interactive plot that when you hover over one state's boxplot, the median values popped up. I know there is a way to do this with `tmap()` but I'm not sure with `ggplot()`.**
+It would have been cool to make an interactive plot that when you hover over one state's boxplot, the median values popped up. I know there is a way to do this with `tmap()` but I'm not sure with `ggplot()`.

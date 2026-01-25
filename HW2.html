@@ -113,6 +113,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
+<section id="import-libraries-packages-and-data" class="level1">
+<h1>Import Libraries, Packages, and Data</h1>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gghighlight)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -121,15 +123,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>nri_counties <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"National_Risk_Index_Counties_807384124455672111.csv"</span>)) <span class="sc">|&gt;</span> </span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
+</section>
+<section id="initial-data-exploration" class="level1">
+<h1>Initial Data Exploration</h1>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Initial data exploration </span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Looking at column names </span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(nri_counties)</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Looking at datatypes of variables of interest</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(nri_counties<span class="sc">$</span>state_name_abbreviation)</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(nri_counties<span class="sc">$</span>national_risk_index_score_composite)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Looking at column names </span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(nri_counties)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Looking at datatypes of variables of interest</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(nri_counties<span class="sc">$</span>state_name_abbreviation)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(nri_counties<span class="sc">$</span>national_risk_index_score_composite)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <section id="build-fema-nri-data-visualization" class="level2">
 <h2 class="anchored" data-anchor-id="build-fema-nri-data-visualization">Build FEMA NRI Data visualization</h2>
@@ -179,8 +182,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="v.-answer-some-questions" class="level2">
-<h2 class="anchored" data-anchor-id="v.-answer-some-questions">V. Answer some questions</h2>
+<section id="questions" class="level2">
+<h2 class="anchored" data-anchor-id="questions">Questions</h2>
 <ol type="1">
 <li>What are your variables of interest and what kinds of data (e.g.&nbsp;numeric, categorical, ordered, etc.) are they (a bullet point list is fine)?</li>
 </ol>
@@ -188,7 +191,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <ol start="2" type="1">
 <li>How did you decide which type of graphic form was best suited for answering the question? What alternative graphic forms could you have used instead? Why did you settle on this particular graphic form?</li>
 </ol>
-<p><strong>I chose a boxplot to compare the distribution of county NRI scores across all 50 states. This graphic form shows summary statistics (median, quartiles, range) while remaining readable with all states displayed. Alternative choices could have been violin plots (showing full distribution shapes) or a simple dot plot of state medians (more minimalist). I settled on the boxplot because it balances detail with clarity—viewers can see both California’s high median and its within-state variability, while the ordered layout makes the ranking immediately obvious.</strong></p>
+<p><strong>I chose a boxplot to compare the distributions of county NRI scores across all 50 states. This visual shows summary statistics (median, quartiles, range) of each state while still being readable. Alternative choices could have been violin plots to show full distribution shapes or a dot plot of state medians which would have been more limited. I chose the boxplot because viewers can see both California’s high median and its within-state variability against other states, while the ordered layout makes the ranking immediately obvious.</strong></p>
 <ol start="3" type="1">
 <li>Summarize your main finding in no more than two sentences.</li>
 </ol>
@@ -200,7 +203,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <ol start="5" type="1">
 <li>Is there anything you wanted to implement, but didn’t know how? If so, please describe.</li>
 </ol>
-<p><strong>It would have been cool to make an interactive plot that when you hover over one states boxplot, the median values popped up. I know there is a way to do this with <code>tmap()</code> but I’m not sure with <code>ggplot()</code>.</strong></p>
+<p><strong>It would have been cool to make an interactive plot that when you hover over one state’s boxplot, the median values popped up. I know there is a way to do this with <code>tmap()</code> but I’m not sure with <code>ggplot()</code>.</strong></p>
+</section>
 </section>
 
 </main>
