@@ -139,40 +139,42 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Removing rows containing data from U.S territories and Washington D.C.</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>nri_counties <span class="ot">&lt;-</span> nri_counties <span class="sc">|&gt;</span> </span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span>state_name <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"American Samoa"</span>, <span class="st">"Northern Mariana Islands"</span>, <span class="st">"Virgin Islands"</span>, <span class="st">"District of Columbia"</span>, <span class="st">"Guam"</span>, <span class="st">"Puerto Rico"</span>)) <span class="sc">|&gt;</span> </span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Reordering state name abbreviation based on median national risk index score composite values </span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>   <span class="fu">mutate</span>(<span class="at">state_name_abbreviation =</span> <span class="fu">reorder</span>(state_name_abbreviation, </span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>                                            national_risk_index_score_composite, </span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>                                            median),</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>          <span class="co"># Create highlight variable for CA to be used later in ggplot. More suitable than gghighlight()</span></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>         <span class="at">highlight =</span> state_name_abbreviation <span class="sc">==</span> <span class="st">"CA"</span>)</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>national_median <span class="ot">&lt;-</span> <span class="fu">median</span>(nri_counties<span class="sc">$</span>national_risk_index_score_composite)</span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>ca_median <span class="ot">&lt;-</span> ca_median <span class="ot">&lt;-</span> <span class="fu">median</span>(nri_counties<span class="sc">$</span>national_risk_index_score_composite[nri_counties<span class="sc">$</span>state_name_abbreviation <span class="sc">==</span> <span class="st">"CA"</span>])</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Create visualization</span></span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(nri_counties, <span class="fu">aes</span>(<span class="at">x =</span> national_risk_index_score_composite, </span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>           <span class="at">y =</span> state_name_abbreviation,</span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>           <span class="at">fill =</span> highlight)) <span class="sc">+</span></span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Remove outliers, makes plot cleaner </span></span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">outlier.shape =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Color CA boxplot </span></span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"grey90"</span>, <span class="st">"orange"</span>), <span class="at">guide =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add vertical line at median national risk index score composite values of all states </span></span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> national_median, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>, <span class="at">linewidth =</span> .<span class="dv">5</span>) <span class="sc">+</span></span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add label for median line</span></span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">"text"</span>, <span class="at">x =</span> <span class="dv">50</span>, <span class="at">y =</span> <span class="dv">50</span>, <span class="at">label =</span> <span class="st">"National median"</span>, </span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>           <span class="at">hjust =</span> <span class="sc">-</span><span class="fl">0.1</span>, <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>   <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> ca_median, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">linewidth =</span> .<span class="dv">5</span>, <span class="at">color =</span> <span class="st">"orange"</span>) <span class="sc">+</span></span>
-<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"National Risk Index Score"</span>, </span>
-<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="cn">NULL</span>, </span>
-<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">"Distribution of County Risk Scores by State"</span>, </span>
-<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>       <span class="at">caption =</span> <span class="st">"California counties (orange) rank highest with nearly double the national median risk score (94.8 vs 50).</span><span class="sc">\n</span><span class="st">Data: FEMA National Risk Index (2025 Release)"</span>) <span class="sc">+</span></span>
-<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">panel.grid.major.y =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>(),</span>
-<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>), <span class="co"># Center title</span></span>
-<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.caption =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>))  <span class="co"># Center subtitle</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span>state_name <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"American Samoa"</span>, <span class="st">"Northern Mariana Islands"</span>, <span class="st">"Virgin Islands"</span>, <span class="st">"District of Columbia"</span>, <span class="st">"Guam"</span>, <span class="st">"Puerto Rico"</span>), </span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Only selecting counties, removing planning areas, borough, census area, municipality etc.  </span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>         county_type <span class="sc">==</span> <span class="st">"County"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Reordering state name abbreviation based on median national risk index score composite values </span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>   <span class="fu">mutate</span>(<span class="at">state_name_abbreviation =</span> <span class="fu">reorder</span>(state_name_abbreviation, </span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>                                            national_risk_index_score_composite, </span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>                                            median),</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>          <span class="co"># Create highlight variable for CA to be used later in ggplot. More suitable than gghighlight()</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>         <span class="at">highlight =</span> state_name_abbreviation <span class="sc">==</span> <span class="st">"CA"</span>)</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>national_median <span class="ot">&lt;-</span> <span class="fu">median</span>(nri_counties<span class="sc">$</span>national_risk_index_score_composite)</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>ca_median <span class="ot">&lt;-</span> ca_median <span class="ot">&lt;-</span> <span class="fu">median</span>(nri_counties<span class="sc">$</span>national_risk_index_score_composite[nri_counties<span class="sc">$</span>state_name_abbreviation <span class="sc">==</span> <span class="st">"CA"</span>])</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Create visualization</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(nri_counties, <span class="fu">aes</span>(<span class="at">x =</span> national_risk_index_score_composite, </span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>           <span class="at">y =</span> state_name_abbreviation,</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>           <span class="at">fill =</span> highlight)) <span class="sc">+</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Remove outliers, makes plot cleaner </span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">outlier.shape =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Color CA boxplot </span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"grey90"</span>, <span class="st">"orange"</span>), <span class="at">guide =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add vertical line at median national risk index score composite values of all states </span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> national_median, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>, <span class="at">linewidth =</span> .<span class="dv">5</span>) <span class="sc">+</span></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add label for median line</span></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">"text"</span>, <span class="at">x =</span> <span class="dv">50</span>, <span class="at">y =</span> <span class="dv">47</span>, <span class="at">label =</span> <span class="st">"National median"</span>, </span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>           <span class="at">hjust =</span> <span class="sc">-</span><span class="fl">0.1</span>, <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>   <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> ca_median, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">linewidth =</span> .<span class="dv">5</span>, <span class="at">color =</span> <span class="st">"orange"</span>) <span class="sc">+</span></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"National Risk Index Score"</span>, </span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="cn">NULL</span>, </span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">"Distribution of County Risk Scores by State"</span>, </span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>       <span class="at">caption =</span> <span class="st">"California counties (orange) rank highest with nearly double the national median risk score (94.8 vs 50).</span><span class="sc">\n</span><span class="st">Data: FEMA National Risk Index (2025 Release)"</span>) <span class="sc">+</span></span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">panel.grid.major.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>), <span class="co"># Center title</span></span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>        <span class="at">plot.caption =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>))  <span class="co"># Center subtitle</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -187,23 +189,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <ol type="1">
 <li>What are your variables of interest and what kinds of data (e.g.&nbsp;numeric, categorical, ordered, etc.) are they (a bullet point list is fine)?</li>
 </ol>
-<p><strong>The variables of interest are state (factor) and national risk index score composite (numeric).</strong></p>
+<p>The variables of interest are state (factor) and national risk index score composite (numeric).</p>
 <ol start="2" type="1">
 <li>How did you decide which type of graphic form was best suited for answering the question? What alternative graphic forms could you have used instead? Why did you settle on this particular graphic form?</li>
 </ol>
-<p><strong>I chose a boxplot to compare the distributions of county NRI scores across all 50 states. This visual shows summary statistics (median, quartiles, range) of each state while still being readable. Alternative choices could have been violin plots to show full distribution shapes or a dot plot of state medians which would have been more limited. I chose the boxplot because viewers can see both California’s high median and its within-state variability against other states, while the ordered layout makes the ranking immediately obvious.</strong></p>
+<p>I chose a boxplot to compare the distributions of county NRI scores across all 50 states. This visual shows summary statistics (median, quartiles, range) of each state while still being readable. Alternative choices could have been violin plots to show full distribution shapes or a dot plot of state medians which would have been more limited. I chose the boxplot because viewers can see both California’s high median and its within-state variability against other states, while the ordered layout makes the ranking immediately obvious.</p>
 <ol start="3" type="1">
 <li>Summarize your main finding in no more than two sentences.</li>
 </ol>
-<p><strong>California counties rank highest with nearly double the national median risk score (94.8 vs 50)</strong></p>
+<p>California counties rank highest with nearly double the national median risk score (94.8 vs 50).</p>
 <ol start="4" type="1">
 <li>What modifications did you make to this visualization to make it more easily readable?</li>
 </ol>
-<p><strong>I added vertical lines representing both the national and California median risk values, reordered states relative to their median national risk index score composite, and highlighted the california boxplot and vertical line orange.</strong></p>
+<p>I added vertical lines representing both the national and California median risk values, reordered states relative to their median national risk index score composite, and highlighted the california boxplot and vertical line orange.</p>
 <ol start="5" type="1">
 <li>Is there anything you wanted to implement, but didn’t know how? If so, please describe.</li>
 </ol>
-<p><strong>It would have been cool to make an interactive plot that when you hover over one state’s boxplot, the median values popped up. I know there is a way to do this with <code>tmap()</code> but I’m not sure with <code>ggplot()</code>.</strong></p>
+<p>It would have been cool to make an interactive plot that when you hover over one state’s boxplot, the median values popped up. I know there is a way to do this with <code>tmap()</code> but I’m not sure with <code>ggplot()</code>.</p>
 </section>
 </section>
 
