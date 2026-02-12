@@ -1,0 +1,151 @@
+---
+title: "Visualizing FEMA NRI x ACS Data"
+author: "Joaquin Sandoval"
+date: 2/11/2026
+format: docx
+editor: visual
+---
+
+```{r, message = FALSE, warning=FALSE}
+library(tidyverse)
+library(tidycensus)
+
+#tidycensus::census_api_key("9518e1ea670bdda31a4c38e0767c3ee36ff4cab3", install = TRUE)
+
+#....Step 1a: see all available ACS variables + descriptions.....
+ acs_vars <- tidycensus::load_variables(year = 2023,
+                                        dataset = "acs1")
+# 
+# #..............Step 1b: import race & ethnicity data.............
+# race_ethnicity <- tidycensus::get_acs(
+#   geography = "county",
+#   survey = "acs1",
+#   # NOTE: you may not end up using all these variables
+#   variables = c("B01003_001", "B02001_002", "B02001_003", 
+#                 "B02001_004", "B02001_005", "B02001_006",
+#                 "B02001_007", "B02001_008", "B03002_012",
+#                 "B03002_002"),
+#   state = "CA", 
+#   year = 2023) |>
+#   # join variable descriptions (so we know what's what!)
+#   dplyr::left_join(acs_vars, by = dplyr::join_by(variable == name)) 
+# 
+# #.................Step 2: write ACS data to file.................
+# readr::write_csv(race_ethnicity, here::here("data", "ACS-1yr-2023-county-race-ethnicity.csv"))
+
+#..................Step 3: read in your CSV file.................
+
+race_ethnicity <- readr::read_csv(here::here("data", "ACS-1yr-2023-county-race-ethnicity.csv")) |> 
+  janitor::clean_names()
+
+nri_counties <- read_csv(here::here("data", "National_Risk_Index_Counties_807384124455672111.csv")) |> 
+  janitor::clean_names()
+```
+
+Create a data viz that helps to answer the question, How does climate hazard risk exposure vary across racial / ethnic groups in California? This will require some data wrangling first (including joining the NRI and ACS data)
+
+```{r, message=FALSE}
+# Filter NRI data to California
+nri_california <- nri_counties |> 
+  filter(state_name == "California")
+
+# Clean race/ethnicity data
+race_ethnicity_clean <- race_ethnicity |> 
+  mutate(
+# Remove "County, California" from name column    
+    county_name = str_remove(name, " County, California"),
+# Rename variable column to race    
+    race = case_match(variable,
+# Rename row values to corresponding label                           
+      "B01003_001" ~ "Total Population",
+      "B02001_002" ~ "White",
+      "B02001_003" ~ "Black",
+      "B02001_004" ~ "American Indian/Alaska Native",
+      "B02001_005" ~ "Asian",
+      "B02001_006" ~ "Native Hawaiian/Pacific Islander",
+      "B02001_007" ~ "Some Other Race",
+      "B02001_008" ~ "Two or More Races",
+      "B03002_002" ~ "Not Hispanic or Latino", 
+      "B03002_012" ~ "Hispanic/Latino"
+    )
+  )
+
+# Join and select relevant columns
+nri_california_race <- nri_california |>
+  full_join(race_ethnicity_clean, by = "county_name") |> 
+  select(county_name, starts_with("national_risk_index"), race, estimate) |> 
+  # Remove county total population and NAs 
+  filter(race != "Total Population", 
+         !is.na(race))
+
+# Analysis 
+
+risk_exposure <- nri_california_race |>
+  group_by(race, national_risk_index_rating_composite) |>
+# Calculate total population of each race group within each NRI Rating Composite 
+  summarise(pop = sum(estimate)) |>
+  group_by(race) |>
+# Calculate percentages of each race group within each NRI Rating Composite
+  mutate(pct = pop / sum(pop) * 100) |>
+  ungroup() 
+
+# Creating order for plot 
+group_order <- risk_exposure |>
+  # Keep only the "Very High" risk rows (one row per racial/ethnic group)
+  filter(national_risk_index_rating_composite == "Very High") |>
+  # Sort by percentage in ascending order (lowest % to highest %)
+  arrange(pct) |>
+  # Extract race column as a vector
+  pull(race)
+
+# Plot 
+ggplot(risk_exposure, 
+       aes(y = factor(race, levels = group_order), 
+           x = pct, 
+           fill = fct_relevel(national_risk_index_rating_composite, 
+                             "Very High", "Relatively High", 
+                             "Relatively Moderate", "Relatively Low"))) +
+  geom_col() +
+  scale_fill_manual(
+    values = c("Very High" = "#d73027", 
+               "Relatively High" = "#fc8d59",
+               "Relatively Moderate" = "#fee08b", 
+               "Relatively Low" = "#91bfdb"),
+    name = "Risk Level"
+  ) +
+  # Reverse legend order to match the plot 
+  guides(fill = guide_legend(reverse = TRUE)) + 
+  labs(
+    title = "Climate Risk Exposure Varies by Race/Ethnicity in California",
+    subtitle = "Percent of each group's population living in California counties by risk levels.\nAsian and Black populations show highest exposure to Very High risk areas.", 
+    x = "Percentage", 
+    y = NULL, 
+    caption = "Data: FEMA National Risk Index (2023 Release)"
+  ) +
+  theme_minimal() +
+  theme(plot.title = element_text(face = "bold"), legend.position = "bottom")
+```
+
+What are your variables of interest and what kinds of data (e.g. numeric, categorical, ordered, etc.) are they (a bullet point list is fine)?
+
+-   `national_risk_index_rating_composite` (from `nri_counties`): Categorical/ordered - climate risk rating with four levels: Relatively Low, Relatively Moderate, Relatively High, and Very High.
+
+-   `variable` (from `race_ethnicity`): Categorical - racial/ethnic group categories including White, Black, Asian, Hispanic/Latino, American Indian/Alaska Native, Native Hawaiian/Pacific Islander, Some Other Race, Two or More Races, and Not Hispanic or Latino.
+
+-   `estimate` (from `race_ethnicity`): Numeric/continuous - population count for each racial/ethnic group within each county.
+
+How did you decide which type of graphic form was best suited for answering the question? What alternative graphic forms could you have used instead? Why did you settle on this particular graphic form?
+
+-   I chose a horizontal stacked bar chart to answer this question. Initially, I explored displaying the distribution of NRI Index Scores for each group, but found that all groups had nearly identical average scores (around 98-99), which didn't reveal meaningful disparities. The stacked bar approach proved more insightful because it shows what proportion of each racial/ethnic group's population lives in each risk category, making it easier to identify which groups face disproportionate exposure to Very High risk areas.
+
+Summarize your main finding in no more than two sentences.
+
+-   The majority of Californians live in counties rated as Relatively High or Very High climate risk. Asian and Black populations show the highest exposure to Very High risk areas, while White and Native Hawaiian/Pacific Islander populations show the lowest exposure relative to their population sizes.
+
+What modifications did you make to this visualization to make it more easily readable?
+
+-   I ordered the racial/ethnic groups by their proportion living in Very High risk counties, placing groups with the highest exposure at the top and descending to those with the lowest exposure. I also reversed the legend order so that the risk levels (Relatively Low to Very High) appear in the same visual sequence as they appear in the stacked bars, making the chart more intuitive to read.
+
+Is there anything you wanted to implement, but didn’t know how? If so, please describe.
+
+-   I wanted to add percentage labels within each segment of the stacked bars to make specific values easier to read. I know we did something similar in class but I am running out of time.
