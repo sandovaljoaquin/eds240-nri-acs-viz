@@ -2,7 +2,7 @@
 title: "Visualizing FEMA NRI x ACS Data"
 author: "Joaquin Sandoval"
 date: 2/11/2026
-format: docx
+format: html
 editor: visual
 ---
 
@@ -44,7 +44,7 @@ nri_counties <- read_csv(here::here("data", "National_Risk_Index_Counties_807384
 
 Create a data viz that helps to answer the question, How does climate hazard risk exposure vary across racial / ethnic groups in California? This will require some data wrangling first (including joining the NRI and ACS data)
 
-```{r, message=FALSE}
+```{r, message=FALSE, fig.alt= "Figure shows racial/ethnic groups that live in various categories of NRI Risk categories. Asian and Black populations show the highest exposure to Very High risk areas, while White and Native Hawaiian/Pacific Islander populations show the lowest exposure relative to their population sizes."}
 # Filter NRI data to California
 nri_california <- nri_counties |> 
   filter(state_name == "California")
