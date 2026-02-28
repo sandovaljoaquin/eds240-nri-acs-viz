@@ -44,7 +44,8 @@ nri_counties <- read_csv(here::here("data", "National_Risk_Index_Counties_807384
 
 Create a data viz that helps to answer the question, How does climate hazard risk exposure vary across racial / ethnic groups in California? This will require some data wrangling first (including joining the NRI and ACS data)
 
-```{r, message=FALSE, fig.alt= "Figure shows racial/ethnic groups that live in various categories of NRI Risk categories. Asian and Black populations show the highest exposure to Very High risk areas, while White and Native Hawaiian/Pacific Islander populations show the lowest exposure relative to their population sizes."}
+```{r, message=FALSE, fig.alt= "Horizontal stacked bar chart showing the percentage of each racial/ethnic group in California living in FEMA National Risk Index climate risk categories. Groups are ordered from highest to lowest percentage in the Very High risk category. Asian and Black populations have the highest percentage in Very High risk areas; White and Native Hawaiian/Pacific Islander have the lowest, with higher percentages in the Relatively High category."}
+
 # Filter NRI data to California
 nri_california <- nri_counties |> 
   filter(state_name == "California")
@@ -113,6 +114,7 @@ ggplot(risk_exposure,
                "Relatively Low" = "#91bfdb"),
     name = "Risk Level"
   ) +
+  scale_x_continuous(labels = scales::label_percent(scale = 1)) +
   # Reverse legend order to match the plot 
   guides(fill = guide_legend(reverse = TRUE)) + 
   labs(
