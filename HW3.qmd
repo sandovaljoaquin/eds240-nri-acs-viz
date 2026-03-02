@@ -2,7 +2,7 @@
 title: "Visualizing FEMA NRI x ACS Data"
 author: "Joaquin Sandoval"
 date: 2/11/2026
-format: html
+format: docx
 editor: visual
 ---
 
